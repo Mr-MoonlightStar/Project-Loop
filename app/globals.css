@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #F8FAFC;
+    --foreground: #0F172A;
+    --surface: #FFFFFF;
+    --surface-subtle: #F1F5F9;
+    --surface-elevated: #FFFFFF;
+    --surface-border: #E2E8F0;
+
+    /* Neumorphic subtle shadows for light mode */
+    --neu-shadow-dark: rgba(148, 163, 184, 0.35);
+    --neu-shadow-light: rgba(255, 255, 255, 0.9);
+
+    /* Glass overlay for light mode */
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.6);
+  }
+
+  .dark {
+    --background: #0B0F17;
+    --foreground: #F8FAFC;
+    --surface: #111827;
+    --surface-subtle: #1F2937;
+    --surface-elevated: #1E293B;
+    --surface-border: #1E293B;
+
+    /* Neumorphic subtle shadows for dark mode */
+    --neu-shadow-dark: rgba(0, 0, 0, 0.6);
+    --neu-shadow-light: rgba(255, 255, 255, 0.04);
+
+    /* Glass overlay for dark mode */
+    --glass-bg: rgba(17, 24, 39, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.08);
+  }
+
+  body {
+    color: var(--foreground);
+    background: var(--background);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+@layer components {
+  /* Grounded Neumorphic Component Style */
+  .neu-card {
+    background-color: var(--surface);
+    border: 1px solid var(--surface-border);
+    box-shadow: 2px 2px 5px var(--neu-shadow-dark), -2px -2px 5px var(--neu-shadow-light);
+    border-radius: 0.75rem;
+  }
+
+  .neu-button {
+    background-color: var(--surface);
+    border: 1px solid var(--surface-border);
+    box-shadow: 2px 2px 4px var(--neu-shadow-dark), -2px -2px 4px var(--neu-shadow-light);
+    transition: all 0.15s ease-in-out;
+  }
+  .neu-button:active {
+    box-shadow: inset 1px 1px 3px var(--neu-shadow-dark), inset -1px -1px 3px var(--neu-shadow-light);
+  }
+
+  /* Floating Glassmorphic Overlay Style (Reserved for Ask LOOP panel, top nav, modals) */
+  .glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.25);
+  }
+}
