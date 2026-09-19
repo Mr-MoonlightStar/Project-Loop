@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  ANALYST
+  VIEWER
+}
+
+enum Sentiment {
+  POS
+  NEU
+  NEG
+}
+
+enum FeedbackStatus {
+  NEW
+  REVIEWED
+  ACTIONED
+}
+
+model Workspace {
+  id        String     @id @default(cuid())
+  name      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  users     User[]
+  feedback  Feedback[]
+  themes    Theme[]
+  reports   Report[]
+
+  @@map("workspaces")
+}
+
+model User {
+  id           String     @id @default(cuid())
+  name         String?
+  email        String     @unique
+  passwordHash String
+  role         Role       @default(ANALYST)
+  workspaceId  String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  workspace    Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  reports      Report[]   @relation("GeneratedReports")
+
+  @@index([workspaceId])
+  @@map("users")
+}
+
+model Feedback {
+  id             String          @id @default(cuid())
+  content        String
+  channel        String          // e.g. "Support Ticket", "App Store", "NPS Survey", "Sales Call", "Community"
+  sourceRef      String?         // Optional external reference/ID
+  customerLabel  String?         // Optional customer / user tier or persona
+  sentiment      Sentiment       @default(NEU)
+  sentimentScore Float           @default(0.0) // -1.0 to 1.0
+  status         FeedbackStatus  @default(NEW)
+  workspaceId    String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  workspace      Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  themes         FeedbackTheme[]
+  embedding      Embedding?
+
+  @@index([workspaceId])
+  @@index([workspaceId, status])
+  @@index([workspaceId, sentiment])
+  @@index([workspaceId, channel])
+  @@map("feedback")
+}
+
+model Theme {
+  id          String          @id @default(cuid())
+  name        String
+  description String?
+  color       String?         // Hex color code for badges/charts
+  workspaceId String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  workspace   Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  feedback    FeedbackTheme[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
+  @@map("themes")
+}
+
+model FeedbackTheme {
+  id         String   @id @default(cuid())
+  feedbackId String
+  themeId    String
+  confidence Float    @default(1.0) // 0.0 to 1.0 confidence score
+  createdAt  DateTime @default(now())
+
+  feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+  theme      Theme    @relation(fields: [themeId], references: [id], onDelete: Cascade)
+
+  @@unique([feedbackId, themeId])
+  @@index([feedbackId])
+  @@index([themeId])
+  @@map("feedback_themes")
+}
+
+model Embedding {
+  id         String   @id @default(cuid())
+  feedbackId String   @unique
+  vector     String   // Serialized float array / vector JSON representation for cross-provider compatibility
+  createdAt  DateTime @default(now())
+
+  feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+
+  @@map("embeddings")
+}
+
+model Report {
+  id            String    @id @default(cuid())
+  title         String
+  periodStart   DateTime
+  periodEnd     DateTime
+  contentJson   Json      // Structured VoC report payload (metrics, themes, sentiment shifts, action items)
+  workspaceId   String
+  generatedById String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  generatedBy   User      @relation("GeneratedReports", fields: [generatedById], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@map("reports")
+}
