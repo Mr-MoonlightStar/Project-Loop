@@ -12,6 +12,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 
 interface ThemeLink {
@@ -55,6 +56,34 @@ export default function FeedbackDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [statusUpdating, setStatusUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isClassifying, setIsClassifying] = useState(false);
+  const [aiRationale, setAiRationale] = useState<string | null>(null);
+
+  const handleReclassify = async () => {
+    if (isViewer || !feedback) return;
+    setIsClassifying(true);
+    setAiRationale(null);
+
+    try {
+      const res = await fetch(`/api/feedback/${feedback.id}/classify`, {
+        method: "POST",
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setFeedback(data.feedback);
+        if (data.classification?.rationale) {
+          setAiRationale(data.classification.rationale);
+        }
+      } else {
+        alert(data.error || "Failed to re-classify feedback");
+      }
+    } catch {
+      alert("Network error while re-classifying item");
+    } finally {
+      setIsClassifying(false);
+    }
+  };
 
   useEffect(() => {
     async function loadFeedback() {
@@ -275,7 +304,42 @@ export default function FeedbackDetailPage() {
                 Viewers have read-only access to status transitions.
               </p>
             )}
+
+            {/* AI Re-classify Button (SPEC.md AI1: Acceptance criteria 4) */}
+            {!isViewer && (
+              <div className="pt-2 border-t border-surface-border">
+                <button
+                  type="button"
+                  disabled={isClassifying}
+                  onClick={handleReclassify}
+                  className="w-full py-2 px-3 rounded-lg bg-surface border border-surface-border hover:bg-surface-subtle text-xs font-medium text-brand-400 flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                >
+                  {isClassifying ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      Classifying with Gemini...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5" />
+                      AI Re-Classify with Gemini
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
+
+          {/* AI Rationale Box (If available) */}
+          {aiRationale && (
+            <div className="p-4 rounded-xl bg-brand-muted border border-brand/20 text-xs space-y-1">
+              <div className="flex items-center gap-1.5 font-semibold text-brand-300">
+                <Sparkles className="w-3.5 h-3.5" />
+                Gemini Analysis
+              </div>
+              <p className="text-slate-300 leading-relaxed text-[11px]">{aiRationale}</p>
+            </div>
+          )}
 
           {/* Sentiment & Channel Metadata */}
           <div className="p-5 rounded-xl bg-surface border border-surface-border space-y-3 text-xs">
