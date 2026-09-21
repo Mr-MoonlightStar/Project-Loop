@@ -26,13 +26,15 @@ export async function GET(req: Request) {
   const status = searchParams.get("status");
   const channel = searchParams.get("channel");
   const sentiment = searchParams.get("sentiment");
+  const themeId = searchParams.get("themeId");
+  const dateRange = searchParams.get("dateRange");
   const query = searchParams.get("q");
   const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
-  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "50", 10)));
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "25", 10)));
   const skip = (page - 1) * limit;
 
   try {
-    // Build where clause with workspaceId enforcement
+    // Build where clause with strict workspaceId enforcement
     const whereClause: Record<string, unknown> = {
       workspaceId: user.workspaceId,
     };
@@ -45,6 +47,22 @@ export async function GET(req: Request) {
     }
     if (sentiment) {
       whereClause.sentiment = sentiment;
+    }
+    if (themeId) {
+      whereClause.themes = {
+        some: {
+          themeId: themeId,
+        },
+      };
+    }
+    if (dateRange && dateRange !== "all") {
+      const now = new Date();
+      let days = 30;
+      if (dateRange === "7d") days = 7;
+      if (dateRange === "90d") days = 90;
+      whereClause.createdAt = {
+        gte: new Date(now.getTime() - days * 24 * 60 * 60 * 1000),
+      };
     }
     if (query && query.trim()) {
       whereClause.content = {
