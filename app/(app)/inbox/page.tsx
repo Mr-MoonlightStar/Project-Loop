@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { Plus, MessageSquare, AlertCircle, CheckCircle2, Search, Filter, ShieldAlert } from "lucide-react";
+import Link from "next/link";
+import { Plus, MessageSquare, AlertCircle, CheckCircle2, Search, Filter, ShieldAlert, UploadCloud } from "lucide-react";
 
 interface FeedbackItem {
   id: string;
@@ -148,12 +149,22 @@ export default function FeedbackPage() {
           </p>
         </div>
 
-        {isViewer && (
-          <div className="px-3 py-1.5 rounded-lg bg-surface border border-surface-border text-xs text-amber-400 flex items-center gap-2">
-            <ShieldAlert className="w-3.5 h-3.5" />
-            <span>Viewer Role: Read-only access enabled</span>
-          </div>
-        )}
+        <div className="flex items-center gap-3">
+          {isViewer ? (
+            <div className="px-3 py-1.5 rounded-lg bg-surface border border-surface-border text-xs text-amber-400 flex items-center gap-2">
+              <ShieldAlert className="w-3.5 h-3.5" />
+              <span>Viewer Role: Read-only</span>
+            </div>
+          ) : (
+            <Link
+              href="/feedback/add"
+              className="px-4 py-2 rounded-lg bg-brand hover:bg-brand-hover text-white text-xs font-medium flex items-center gap-2 transition-all shadow-sm"
+            >
+              <UploadCloud className="w-4 h-4" />
+              Ingest Feedback
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Single Entry Ingestion Form (Cycle 1 "Bicycle") */}
