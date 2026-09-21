@@ -1,13 +1,60 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { requireAdmin, requireAnalystOrAdmin } from "@/lib/rbac";
+import { requireAdmin, requireAnalystOrAdmin, requireAnyRole } from "@/lib/rbac";
 
 const updateFeedbackSchema = z.object({
   status: z.enum(["NEW", "REVIEWED", "ACTIONED"]).optional(),
   sentiment: z.enum(["POS", "NEU", "NEG"]).optional(),
   sentimentScore: z.number().min(-1).max(1).optional(),
 });
+
+/**
+ * GET /api/feedback/[id]
+ * Retrieves a single feedback item with attached themes.
+ * HARD RULE: Scoped strictly to caller's workspaceId. All roles can view.
+ */
+export async function GET(
+  _req: Request,
+  { params }: { params: { id: string } }
+) {
+  const auth = await requireAnyRole();
+  if (auth.errorResponse) return auth.errorResponse;
+  const { user } = auth;
+
+  const { id } = params;
+
+  try {
+    const feedback = await prisma.feedback.findFirst({
+      where: {
+        id,
+        workspaceId: user.workspaceId,
+      },
+      include: {
+        themes: {
+          include: {
+            theme: true,
+          },
+        },
+      },
+    });
+
+    if (!feedback) {
+      return NextResponse.json(
+        { error: "Feedback item not found in this workspace" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ feedback });
+  } catch (error) {
+    console.error("Error retrieving feedback item:", error);
+    return NextResponse.json(
+      { error: "Failed to retrieve feedback item" },
+      { status: 500 }
+    );
+  }
+}
 
 /**
  * PATCH /api/feedback/[id]
