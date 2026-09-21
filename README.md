@@ -84,4 +84,3 @@ The seeded demo workspace comes with pre-configured users for each RBAC tier:
 - [ ] Step 9: AI3 — Ask LOOP grounded semantic Q&A with citations
 - [ ] Step 10: AI4 — Voice-of-Customer report generation & export
 - [ ] Step 11: Production hardening & accessibility review
-- [ ] Step 12: Final documentation, verification & demo prep
