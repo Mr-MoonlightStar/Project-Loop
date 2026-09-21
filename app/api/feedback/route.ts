@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { requireAnalystOrAdmin, requireAnyRole } from "@/lib/rbac";
+import { classifyFeedback } from "@/lib/ai";
 
 const createFeedbackSchema = z.object({
   content: z.string().min(5, "Feedback content must be at least 5 characters"),
@@ -134,18 +135,53 @@ export async function POST(req: Request) {
 
     const data = result.data;
 
+    // Fetch existing themes for workspace
+    const existingThemes = await prisma.theme.findMany({
+      where: { workspaceId: user.workspaceId },
+      select: { id: true, name: true },
+    });
+
+    // Run auto-classification (Gemini or fallback)
+    const classification = await classifyFeedback(
+      data.content,
+      existingThemes.map((t) => t.name)
+    );
+
     const feedback = await prisma.feedback.create({
       data: {
         content: data.content,
         channel: data.channel,
         customerLabel: data.customerLabel || null,
         sourceRef: data.sourceRef || null,
-        sentiment: data.sentiment,
-        sentimentScore: data.sentimentScore,
+        sentiment: classification.sentiment,
+        sentimentScore: classification.sentimentScore,
         status: "NEW",
         workspaceId: user.workspaceId, // Strict tenant scoping
       },
     });
+
+    // Link themes
+    for (const themeName of classification.themes) {
+      let theme = existingThemes.find((t) => t.name.toLowerCase() === themeName.toLowerCase());
+      if (!theme) {
+        theme = await prisma.theme.create({
+          data: {
+            name: themeName,
+            workspaceId: user.workspaceId,
+            description: `Auto-generated theme for ${classification.featureArea}`,
+            color: "#6366F1",
+          },
+        });
+      }
+
+      await prisma.feedbackTheme.create({
+        data: {
+          feedbackId: feedback.id,
+          themeId: theme.id,
+          confidence: 0.95,
+        },
+      });
+    }
 
     return NextResponse.json(feedback, { status: 201 });
   } catch (error) {
