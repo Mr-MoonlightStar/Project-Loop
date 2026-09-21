@@ -1,7 +1,7 @@
 # Project LOOP — AI Customer-Feedback Intelligence Platform
 
 > **"Close the loop on customer feedback."**  
-> Corporate-grade multi-tenant AI customer-feedback intelligence platform built with Next.js 14 App Router, TypeScript, PostgreSQL (Neon / Prisma), and Claude AI.
+> Corporate-grade multi-tenant AI customer-feedback intelligence platform built with Next.js 14 App Router, TypeScript, PostgreSQL (Neon / Prisma), and Gemini AI.
 
 ---
 
@@ -34,7 +34,7 @@ Project LOOP ingests multi-channel customer feedback (support tickets, app-store
 ### 1. Prerequisites
 - Node.js 18+ LTS
 - PostgreSQL database URL (Neon or Supabase free tier)
-- Anthropic API Key
+- Google API Key
 
 ### 2. Environment Setup
 Copy `.env.example` to `.env` and fill in your credentials:
