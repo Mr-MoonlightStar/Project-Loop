@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { Building, LogOut, LayoutDashboard, Inbox, TrendingUp, Sparkles, FileText } from "lucide-react";
+import { Building, LogOut, LayoutDashboard, Inbox, TrendingUp, Sparkles, FileText, Settings, User } from "lucide-react";
 import Link from "next/link";
 
 export default async function AppLayout({
@@ -69,17 +69,37 @@ export default async function AppLayout({
           </nav>
         </div>
 
-        {/* User / Tenant Badge & Logout */}
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-lg bg-surface border border-surface-border text-xs">
+        {/* User / Tenant Badge & Actions */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Link
+            href="/settings"
+            className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-lg bg-surface border border-surface-border text-xs hover:border-brand/40 transition-colors"
+            title="Workspace Settings"
+          >
             <Building className="w-3.5 h-3.5 text-slate-400" />
             <span className="font-medium text-slate-200">{user.workspaceName}</span>
             <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-brand-muted text-brand-400 border border-brand-500/20 font-semibold">
               {user.role}
             </span>
-          </div>
+          </Link>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            <Link
+              href="/settings"
+              className="p-2 rounded-lg hover:bg-surface-subtle text-slate-400 hover:text-slate-200 transition-colors"
+              title="Workspace Settings"
+            >
+              <Settings className="w-4 h-4" />
+            </Link>
+
+            <Link
+              href="/profile"
+              className="p-2 rounded-lg hover:bg-surface-subtle text-slate-400 hover:text-slate-200 transition-colors"
+              title="User Profile"
+            >
+              <User className="w-4 h-4" />
+            </Link>
+
             <Link
               href="/api/auth/signout"
               className="p-2 rounded-lg hover:bg-surface-subtle text-slate-400 hover:text-red-400 transition-colors"
