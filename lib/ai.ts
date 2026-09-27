@@ -243,3 +243,265 @@ Return JSON matching this schema:
     };
   }
 }
+
+export const reportContentSchema = z.object({
+  executiveSummary: z.string(),
+  keyInsights: z.array(z.string()),
+  emergingIssues: z.array(
+    z.object({
+      issue: z.string(),
+      impact: z.enum(["CRITICAL", "HIGH", "MEDIUM", "LOW"]),
+      evidenceQuote: z.string(),
+      suggestedFix: z.string(),
+    })
+  ),
+  metrics: z.object({
+    totalVolume: z.number(),
+    sentimentBreakdown: z.object({
+      positive: z.number(),
+      neutral: z.number(),
+      negative: z.number(),
+      positivePct: z.number(),
+      neutralPct: z.number(),
+      negativePct: z.number(),
+    }),
+    avgSentimentScore: z.number(),
+  }),
+  topThemes: z.array(
+    z.object({
+      themeId: z.string().optional(),
+      name: z.string(),
+      count: z.number(),
+      percentage: z.number(),
+      sentiment: z.object({
+        positive: z.number(),
+        neutral: z.number(),
+        negative: z.number(),
+      }),
+      sampleQuotes: z.array(z.string()),
+      analysis: z.string(),
+    })
+  ),
+  recommendations: z.array(
+    z.object({
+      area: z.string(),
+      title: z.string(),
+      description: z.string(),
+      priority: z.enum(["P0", "P1", "P2"]),
+    })
+  ),
+});
+
+export type VoCReportContent = z.infer<typeof reportContentSchema>;
+
+export interface PrecomputedReportData {
+  periodLabel: string;
+  totalVolume: number;
+  sentimentBreakdown: {
+    positive: number;
+    neutral: number;
+    negative: number;
+    positivePct: number;
+    neutralPct: number;
+    negativePct: number;
+  };
+  avgSentimentScore: number;
+  topThemes: Array<{
+    themeId?: string;
+    name: string;
+    count: number;
+    percentage: number;
+    sentiment: { positive: number; neutral: number; negative: number };
+    sampleQuotes: string[];
+  }>;
+  recentCriticalQuotes: string[];
+}
+
+/**
+ * Generates an executive Voice of Customer (VoC) report using Gemini 2.5 Flash,
+ * grounded in strictly pre-computed metrics and actual customer quotes.
+ */
+export async function generateVoCReport(data: PrecomputedReportData): Promise<VoCReportContent> {
+  const apiKey = process.env.GEMINI_API_KEY;
+
+  if (!apiKey || apiKey === "AIzaSy..." || apiKey.trim() === "") {
+    console.warn("GEMINI_API_KEY not configured. Generating deterministic VoC report narrative.");
+    return fallbackVoCReport(data);
+  }
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash",
+    generationConfig: {
+      responseMimeType: "application/json",
+      temperature: 0.2,
+    },
+  });
+
+  const prompt = `
+You are the Chief Product Intelligence Officer for Project LOOP.
+Generate a structured, corporate-grade Voice of the Customer (VoC) Executive Report based ONLY on the pre-computed metrics and actual customer quotes below.
+
+REPORTING PERIOD: ${data.periodLabel}
+TOTAL VOLUME: ${data.totalVolume} items
+SENTIMENT METRICS:
+- Positive: ${data.sentimentBreakdown.positive} (${data.sentimentBreakdown.positivePct}%)
+- Neutral: ${data.sentimentBreakdown.neutral} (${data.sentimentBreakdown.neutralPct}%)
+- Negative: ${data.sentimentBreakdown.negative} (${data.sentimentBreakdown.negativePct}%)
+- Average Score: ${data.avgSentimentScore.toFixed(2)} (-1.0 to +1.0)
+
+TOP THEMES WITH REAL CUSTOMER QUOTES:
+${data.topThemes
+  .map(
+    (t, i) => `Theme ${i + 1}: ${t.name} (${t.count} items, ${t.percentage}% of total)
+  Sentiment: POS ${t.sentiment.positive}, NEU ${t.sentiment.neutral}, NEG ${t.sentiment.negative}
+  Direct Customer Quotes:
+  ${t.sampleQuotes.map((q) => `  - "${q}"`).join("\n")}`
+  )
+  .join("\n\n")}
+
+CRITICAL / URGENT QUOTES:
+${data.recentCriticalQuotes.length > 0 ? data.recentCriticalQuotes.map((q) => `- "${q}"`).join("\n") : "None highlighted"}
+
+INSTRUCTIONS:
+1. "executiveSummary": Write a concise, executive-level narrative summary (2-3 paragraphs) capturing the overall sentiment trajectory, primary drivers of satisfaction, and primary churn/friction vectors.
+2. "keyInsights": 3 to 5 clear, bulleted strategic takeaways.
+3. "emergingIssues": Identify 2 to 4 high-priority emerging risks or customer blockers. For each, cite an exact evidence quote from the data and a suggested fix.
+4. "topThemes": For each theme provided, write an "analysis" paragraph synthesizing what users are experiencing and why. Retain the exact count, percentage, sentiment, and sampleQuotes provided.
+5. "recommendations": Propose 3 to 5 cross-functional action items divided across "Product", "Engineering", and "Support" with priorities ("P0", "P1", or "P2").
+
+Return JSON strictly matching this schema:
+{
+  "executiveSummary": string,
+  "keyInsights": string[],
+  "emergingIssues": [
+    {
+      "issue": string,
+      "impact": "CRITICAL" | "HIGH" | "MEDIUM" | "LOW",
+      "evidenceQuote": string,
+      "suggestedFix": string
+    }
+  ],
+  "metrics": {
+    "totalVolume": number,
+    "sentimentBreakdown": {
+      "positive": number,
+      "neutral": number,
+      "negative": number,
+      "positivePct": number,
+      "neutralPct": number,
+      "negativePct": number
+    },
+    "avgSentimentScore": number
+  },
+  "topThemes": [
+    {
+      "themeId": string,
+      "name": string,
+      "count": number,
+      "percentage": number,
+      "sentiment": { "positive": number, "neutral": number, "negative": number },
+      "sampleQuotes": string[],
+      "analysis": string
+    }
+  ],
+  "recommendations": [
+    {
+      "area": string,
+      "title": string,
+      "description": string,
+      "priority": "P0" | "P1" | "P2"
+    }
+  ]
+}
+`;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const cleaned = cleanJsonOutput(result.response.text());
+    const parsed = JSON.parse(cleaned);
+    const validated = reportContentSchema.safeParse(parsed);
+
+    if (validated.success) {
+      return validated.data;
+    }
+
+    console.warn("VoC report parsing warning, fallback to structured builder:", validated.error);
+    return fallbackVoCReport(data, parsed);
+  } catch (err) {
+    console.error("Gemini VoC report generation error:", err);
+    return fallbackVoCReport(data);
+  }
+}
+
+/**
+ * Deterministic fallback VoC report generator when Gemini is offline or fails schema.
+ */
+function fallbackVoCReport(data: PrecomputedReportData, partial?: Partial<VoCReportContent>): VoCReportContent {
+  const topThemeNames = data.topThemes.map((t) => t.name).join(", ");
+  const dominantSentiment =
+    data.sentimentBreakdown.positive > data.sentimentBreakdown.negative ? "positive" : "negative";
+
+  return {
+    executiveSummary:
+      partial?.executiveSummary ||
+      `During ${data.periodLabel}, a total of ${data.totalVolume} customer feedback items were captured and processed across all integrated channels. Overall customer sentiment remains predominantly ${dominantSentiment} (${data.sentimentBreakdown.positivePct}% positive vs ${data.sentimentBreakdown.negativePct}% negative) with an average sentiment score of ${data.avgSentimentScore.toFixed(2)}. The primary conversational drivers center on ${topThemeNames || "core feature usability"}. Priority attention is recommended for negative feedback clusters affecting reliability and user workflow continuity.`,
+    keyInsights:
+      partial?.keyInsights && partial.keyInsights.length > 0
+        ? partial.keyInsights
+        : [
+            `Total volume reached ${data.totalVolume} items during ${data.periodLabel}.`,
+            `${data.topThemes[0]?.name || "Core Features"} generated the highest customer engagement (${data.topThemes[0]?.percentage || 0}% of all feedback).`,
+            `Customer sentiment stands at ${data.sentimentBreakdown.positivePct}% positive, ${data.sentimentBreakdown.neutralPct}% neutral, and ${data.sentimentBreakdown.negativePct}% negative.`,
+            `Key action items focus on resolving critical user blockers and stabilizing high-velocity theme touchpoints.`,
+          ],
+    emergingIssues:
+      partial?.emergingIssues && partial.emergingIssues.length > 0
+        ? partial.emergingIssues
+        : data.recentCriticalQuotes.slice(0, 3).map((quote, idx) => ({
+            issue: `High friction point in core workflow #${idx + 1}`,
+            impact: idx === 0 ? "HIGH" : "MEDIUM",
+            evidenceQuote: quote,
+            suggestedFix: "Review logs, inspect error boundary traces, and prioritize hotfix in upcoming sprint.",
+          })),
+    metrics: {
+      totalVolume: data.totalVolume,
+      sentimentBreakdown: data.sentimentBreakdown,
+      avgSentimentScore: data.avgSentimentScore,
+    },
+    topThemes: data.topThemes.map((t) => ({
+      themeId: t.themeId,
+      name: t.name,
+      count: t.count,
+      percentage: t.percentage,
+      sentiment: t.sentiment,
+      sampleQuotes: t.sampleQuotes,
+      analysis:
+        `Feedback regarding ${t.name} accounts for ${t.percentage}% of user discussions in this window (${t.count} total items). Sentiment distribution is ${t.sentiment.positive} positive, ${t.sentiment.neutral} neutral, and ${t.sentiment.negative} negative.`,
+    })),
+    recommendations:
+      partial?.recommendations && partial.recommendations.length > 0
+        ? partial.recommendations
+        : [
+            {
+              area: "Engineering",
+              title: "Address performance and latency bottlenecks",
+              description: "Investigate and optimize the top slow query and load-time complaints highlighted in user feedback.",
+              priority: "P0",
+            },
+            {
+              area: "Product",
+              title: "Streamline export and configuration UX",
+              description: "Refine user flow and error messaging for bulk actions and reporting setups based on feedback trends.",
+              priority: "P1",
+            },
+            {
+              area: "Support",
+              title: "Publish proactive knowledge base documentation",
+              description: "Create quick-start guides addressing recurring customer inquiries in neutral and negative feedback threads.",
+              priority: "P2",
+            },
+          ],
+  };
+}
+
