@@ -1,6 +1,6 @@
 # Project LOOP — Corporate AI Customer-Feedback Intelligence Platform
 
-> **"Close the loop on customer feedback."**  
+> **"The loop on customer feedback."**  
 > Project LOOP is an enterprise-grade multi-tenant customer feedback intelligence platform built with **Next.js 14 App Router**, **TypeScript**, **PostgreSQL (Neon / Prisma)**, and **Google Gemini AI**.
 
 [![Next.js](https://img.shields.io/badge/Next.js-14_App_Router-black?logo=next.js)](https://nextjs.org/)
