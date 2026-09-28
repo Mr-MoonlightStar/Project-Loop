@@ -37,6 +37,10 @@ Thumbs.db
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
-
 /app/generated/prisma
+
+# AI/IDE tooling
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
