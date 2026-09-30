@@ -38,3 +38,9 @@ Thumbs.db
 *.njsproj
 *.sln
 /app/generated/prisma
+
+# AI/IDE tooling
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
