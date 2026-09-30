@@ -7,7 +7,7 @@
     "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts"
+    "seed": "ts-node -O \"{\\\"module\\\":\\\"CommonJS\\\"}\" prisma/seed.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
