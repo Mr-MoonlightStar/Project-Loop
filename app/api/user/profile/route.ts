@@ -80,9 +80,11 @@ export async function PATCH(req: NextRequest) {
         );
       }
 
-      const isValid = await bcrypt.compare(currentPassword, currentUser.passwordHash);
-      if (!isValid) {
-        return NextResponse.json({ error: "Current password is incorrect" }, { status: 400 });
+      if (currentUser.passwordHash) {
+        const isValid = await bcrypt.compare(currentPassword, currentUser.passwordHash);
+        if (!isValid) {
+          return NextResponse.json({ error: "Current password is incorrect" }, { status: 400 });
+        }
       }
 
       updateData.passwordHash = await bcrypt.hash(newPassword, 10);

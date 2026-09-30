@@ -4,6 +4,9 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 
+import GoogleProvider from "next-auth/providers/google";
+import GithubProvider from "next-auth/providers/github";
+
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
@@ -18,6 +21,22 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   providers: [
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? [
+          GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          }),
+        ]
+      : []),
+    ...(process.env.GITHUB_ID && process.env.GITHUB_SECRET
+      ? [
+          GithubProvider({
+            clientId: process.env.GITHUB_ID,
+            clientSecret: process.env.GITHUB_SECRET,
+          }),
+        ]
+      : []),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -65,6 +84,44 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "google" || account?.provider === "github") {
+        if (!user.email) return false;
+
+        let dbUser = await prisma.user.findUnique({
+          where: { email: user.email },
+          include: { workspace: true },
+        });
+
+        if (!dbUser) {
+          const workspaceName = `${user.name || "My"}'s Organization`;
+          const workspace = await prisma.workspace.create({
+            data: {
+              name: workspaceName,
+              users: {
+                create: {
+                  email: user.email,
+                  name: user.name || "OAuth User",
+                  role: "ADMIN",
+                },
+              },
+            },
+            include: {
+              users: true,
+            },
+          });
+          dbUser = workspace.users[0] ? { ...workspace.users[0], workspace } : null;
+        }
+
+        if (dbUser) {
+          user.id = dbUser.id;
+          user.role = dbUser.role;
+          user.workspaceId = dbUser.workspaceId;
+          user.workspaceName = dbUser.workspace?.name || "Default Workspace";
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
