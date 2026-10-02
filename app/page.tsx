@@ -59,6 +59,12 @@ export default function Home() {
             Get Started
             <ArrowRight className="w-4 h-4" />
           </Link>
+          <Link
+            href="/report"
+            className="px-5 py-3 rounded-xl bg-surface hover:bg-surface-elevated border border-surface-border text-slate-300 hover:text-white font-medium text-sm flex items-center gap-2 transition-all shadow-sm"
+          >
+            <span>Platform Dossier & Report</span>
+          </Link>
         </div>
 
         {/* System Pillars Grounded Cards */}

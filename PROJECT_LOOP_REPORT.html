@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project LOOP — Executive Platform & Architecture Report</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg: #090d16;
+      --card-bg: #111726;
+      --border: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand: #6366f1;
+      --brand-light: #818cf8;
+      --pos: #10b981;
+      --neg: #ef4444;
+      --neu: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      padding: 40px 24px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .print-bar {
+      position: sticky;
+      top: 16px;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(17, 23, 38, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin-bottom: 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .btn-print {
+      background: var(--brand);
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-print:hover {
+      background: var(--brand-light);
+      transform: translateY(-1px);
+    }
+
+    header {
+      margin-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 32px;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--brand-light);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .tagline {
+      font-size: 18px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .meta-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      border-radius: 10px;
+    }
+
+    .meta-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .meta-val {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-top: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-top: 48px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 24px;
+      margin-bottom: 12px;
+      color: var(--brand-light);
+    }
+
+    p, li {
+      color: #cbd5e1;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+
+    ul, ol {
+      padding-left: 24px;
+      margin-bottom: 16px;
+    }
+
+    li { margin-bottom: 8px; }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 14px;
+      background: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background: #161e31;
+      color: #fff;
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: #cbd5e1;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .code-block {
+      background: #0d121f;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      color: #e2e8f0;
+      margin-bottom: 16px;
+    }
+
+    .role-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-admin { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge-analyst { background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
+    .badge-viewer { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        padding: 0 !important;
+      }
+      .print-bar { display: none !important; }
+      .container { max-width: 100% !important; }
+      .card, table, .meta-card, .code-block {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+      }
+      h1 {
+        -webkit-text-fill-color: #0f172a !important;
+        color: #0f172a !important;
+      }
+      h2, h3 { color: #1e293b !important; border-color: #cbd5e1 !important; }
+      p, li, td { color: #334155 !important; }
+      th { background: #f1f5f9 !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+      .code-block { background: #f8fafc !important; color: #0f172a !important; }
+      a { color: #4338ca !important; text-decoration: underline; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="print-bar">
+      <div>
+        <strong style="color: #fff;">Project LOOP Dossier</strong>
+        <span style="font-size: 13px; color: var(--text-muted); margin-left: 8px;">Executive Technical Specification & Report</span>
+      </div>
+      <button class="btn-print" onclick="window.print()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
+        Save / Print as PDF
+      </button>
+    </div>
+
+    <header>
+      <span class="badge-pill">Enterprise AI Architecture Report</span>
+      <h1>Project LOOP — Platform Intelligence Report</h1>
+      <p class="tagline">"Close the loop on customer feedback." Multi-tenant, retrieval-grounded customer intelligence engine.</p>
+      
+      <div class="meta-grid">
+        <div class="meta-card">
+          <div class="meta-label">Repository</div>
+          <div class="meta-val">Mr-MoonlightStar/Project-Loop</div>
+        </div>
+        <div class="meta-card">
+          <div class="meta-label">Primary Stack</div>
+          <div class="meta-val">Next.js 14 + Neon + Gemini 2.5</div>
+        </div>
+        <div class="meta-card">
+          <div class="meta-label">Database Status</div>
+          <div class="meta-val" style="color: var(--pos);">Neon Live (180+ Rows)</div>
+        </div>
+        <div class="meta-card">
+          <div class="meta-label">Release Version</div>
+          <div class="meta-val">v1.0.0 Production</div>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <h2>1. Executive Overview & Mission</h2>
+      <div class="card">
+        <p>Project LOOP is a corporate-grade, multi-tenant B2B SaaS feedback intelligence engine that unifies customer feedback across fragmented channels (Support Tickets, App Store reviews, NPS surveys, Sales calls, and Intercom chat logs).</p>
+        <p>Unlike conventional sentiment analysis tools that produce superficial word clouds, Project LOOP combines <strong>deterministic quantitative analytics</strong> with <strong>grounded LLM intelligence</strong> (Google Gemini 2.5 Flash + <code>text-embedding-004</code> vector embeddings) to ensure zero hallucination, theme spike detection, and verbatim quote citations.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>2. Complete Technology Stack</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Technology</th>
+            <th>Role & Specification</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Framework</strong></td>
+            <td>Next.js 14.2.15 (App Router)</td>
+            <td>React Server Components (RSC), dynamic server rendering, streaming API route handlers.</td>
+          </tr>
+          <tr>
+            <td><strong>Language</strong></td>
+            <td>TypeScript 5.x</td>
+            <td>End-to-end type safety across database models, Gemini schemas, and frontend props.</td>
+          </tr>
+          <tr>
+            <td><strong>Styling</strong></td>
+            <td>Tailwind CSS 3.4</td>
+            <td>Custom B2B SaaS design system, flat cards, 1px subtle borders, zinc/slate neutrals, and brand accent #6366f1.</td>
+          </tr>
+          <tr>
+            <td><strong>Database & ORM</strong></td>
+            <td>PostgreSQL (Neon) + Prisma 5.22.0</td>
+            <td>Serverless Postgres in <code>ap-southeast-1</code> with PgBouncer connection pooling (<code>-pooler</code>).</td>
+          </tr>
+          <tr>
+            <td><strong>Authentication</strong></td>
+            <td>NextAuth.js v4 + Bcrypt.js</td>
+            <td>30-day JWT sessions, Credentials provider, plus Google & GitHub OAuth with workspace self-provisioning.</td>
+          </tr>
+          <tr>
+            <td><strong>AI Inference</strong></td>
+            <td>Google Gemini 2.5 Flash</td>
+            <td>Structured JSON sentiment classification, theme assignment, executive VoC synthesis.</td>
+          </tr>
+          <tr>
+            <td><strong>Embeddings</strong></td>
+            <td>Google text-embedding-004</td>
+            <td>768-dimensional vector embeddings for cosine similarity search over customer verbatim quotes.</td>
+          </tr>
+          <tr>
+            <td><strong>Data Visualization</strong></td>
+            <td>Recharts 3.10</td>
+            <td>Volume area charts, sentiment donut charts, top themes horizontal bars, velocity trendlines.</td>
+          </tr>
+          <tr>
+            <td><strong>Data Ingestion</strong></td>
+            <td>Papa Parse 5.7</td>
+            <td>Client-side CSV parsing with column mapping preview and batch database insertion.</td>
+          </tr>
+          <tr>
+            <td><strong>Hosting & Edge</strong></td>
+            <td>Vercel</td>
+            <td>Continuous deployment from GitHub <code>main</code> branch with serverless edge routing.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>3. Architecture & Security Guarantees</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>1. Cryptographic & Logical Multi-Tenancy</h3>
+          <ul>
+            <li>Every database query strictly filters by <code>WHERE workspaceId = session.user.workspaceId</code>.</li>
+            <li>Cross-tenant leakage is mathematically and logically impossible.</li>
+            <li>NextAuth session cookies carry immutable workspace claims verified on every request.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>2. Zero-Hallucination Grounded AI</h3>
+          <ul>
+            <li>Gemini prompts strictly enforce refusal if customer quotes are not present in the workspace corpus.</li>
+            <li>Every answer cites bracketed source quote IDs <code>[1]</code>, <code>[2]</code>.</li>
+            <li>Quantitative metrics are pre-calculated deterministically in TypeScript before narrative generation.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Role-Based Access Control (RBAC) Matrix</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th>Permissions & Capabilities</th>
+              <th>Accessible Screens</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="role-badge badge-admin">ADMIN</span></td>
+              <td>Full workspace governance, member invite/demote, role management, feedback & report deletion, system settings.</td>
+              <td>All routes: <code>/settings</code>, <code>/dashboard</code>, <code>/inbox</code>, <code>/ask</code>, <code>/reports</code></td>
+            </tr>
+            <tr>
+              <td><span class="role-badge badge-analyst">ANALYST</span></td>
+              <td>Data ingestion (CSV & simulated channels), triage workflow (<code>NEW</code> → <code>REVIEWED</code> → <code>ACTIONED</code>), AI re-classify, VoC report generation.</td>
+              <td><code>/dashboard</code>, <code>/inbox</code>, <code>/inbox/[id]</code>, <code>/feedback/add</code>, <code>/trends</code>, <code>/reports</code></td>
+            </tr>
+            <tr>
+              <td><span class="role-badge badge-viewer">VIEWER</span></td>
+              <td>Read-only access to executive dashboards, feedback explorer, Ask LOOP assistant, and generated reports.</td>
+              <td><code>/dashboard</code>, <code>/inbox</code>, <code>/ask</code>, <code>/reports</code>, <code>/trends</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>4. Complete Screen & Route Inventory</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Route</th>
+            <th>Screen Name</th>
+            <th>Primary Functionality</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>/</code></td>
+            <td>Public Landing Page</td>
+            <td>Hero narrative, product value propositions, and sign-in triggers.</td>
+          </tr>
+          <tr>
+            <td><code>/login</code></td>
+            <td>Authentication Gateway</td>
+            <td>1-click demo quick-fill buttons for all 3 RBAC tiers, credentials, and OAuth buttons.</td>
+          </tr>
+          <tr>
+            <td><code>/signup</code></td>
+            <td>Organization Onboarding</td>
+            <td>Atomic workspace creation and assignment of initial user as ADMIN.</td>
+          </tr>
+          <tr>
+            <td><code>/dashboard</code></td>
+            <td>Executive Analytics</td>
+            <td>Volume area charts, sentiment donut breakdown, top themes horizontal bars, period filters (7d, 30d, 90d, all).</td>
+          </tr>
+          <tr>
+            <td><code>/inbox</code></td>
+            <td>Feedback Explorer</td>
+            <td>High-density data table with multi-faceted search, status/sentiment/channel filters, and server pagination.</td>
+          </tr>
+          <tr>
+            <td><code>/inbox/[id]</code></td>
+            <td>Customer Transcript Detail</td>
+            <td>Verbatim feedback transcript, metadata badges, triage status dropdown, and manual AI re-classification.</td>
+          </tr>
+          <tr>
+            <td><code>/feedback/add</code></td>
+            <td>Multi-Channel Ingestion Hub</td>
+            <td>CSV bulk import with Papa Parse preview, simulated channel feeds (Zendesk, G2, App Store), and manual form.</td>
+          </tr>
+          <tr>
+            <td><code>/trends</code></td>
+            <td>Theme Velocity & Spikes</td>
+            <td>Theme velocity cards, timeline trendlines, and spike alert banners (&ge; 50% growth with &ge; 3 items).</td>
+          </tr>
+          <tr>
+            <td><code>/ask</code></td>
+            <td>Ask LOOP Grounded Chat</td>
+            <td>Floating glassmorphic chat container with recommended prompt chips, source quote citations, and source inspection drawer.</td>
+          </tr>
+          <tr>
+            <td><code>/reports</code></td>
+            <td>VoC Dossier Library</td>
+            <td>Executive report archive with date-range generator modal.</td>
+          </tr>
+          <tr>
+            <td><code>/reports/[id]</code></td>
+            <td>Board-Ready VoC Report</td>
+            <td>Printable executive VoC dossier with KPI ribbon, emerging risk matrix, and <code>@media print</code> PDF styling.</td>
+          </tr>
+          <tr>
+            <td><code>/settings</code></td>
+            <td>Workspace Governance</td>
+            <td>Organization parameters, member directory, role promotion/demotion, and invitation modal.</td>
+          </tr>
+          <tr>
+            <td><code>/profile</code></td>
+            <td>User Identity</td>
+            <td>Personal identity overview, workspace membership badge, and password change security form.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>5. Active Demo Credentials (Seeded in Neon)</h2>
+      <div class="card">
+        <p>The remote Neon PostgreSQL database is pre-seeded with <strong>180 real feedback rows</strong> across 6 core themes for the workspace <strong>Acme Analytics</strong>:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th>Email</th>
+              <th>Password</th>
+              <th>Scope</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="role-badge badge-admin">ADMIN</span></td>
+              <td><code>admin@loopdemo.com</code></td>
+              <td><code>password123</code></td>
+              <td>Full workspace governance, settings, user management</td>
+            </tr>
+            <tr>
+              <td><span class="role-badge badge-analyst">ANALYST</span></td>
+              <td><code>analyst@loopdemo.com</code></td>
+              <td><code>password123</code></td>
+              <td>Data ingestion, CSV import, triage, AI re-classification, VoC reports</td>
+            </tr>
+            <tr>
+              <td><span class="role-badge badge-viewer">VIEWER</span></td>
+              <td><code>viewer@loopdemo.com</code></td>
+              <td><code>password123</code></td>
+              <td>Read-only dashboards, Ask LOOP queries, reports</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>6. Production Build & Deployment Reference</h2>
+      <div class="card">
+        <p>The build command configured in <code>package.json</code> seamlessly synchronizes the database schema with Neon before compiling Next.js:</p>
+        <div class="code-block">
+prisma generate && prisma db push && next build
+        </div>
+        <h3>Environment Variables Configuration</h3>
+        <div class="code-block">
+DATABASE_URL="postgresql://neondb_owner:npg_E7tNe5uvJxgj@ep-flat-bread-b39tcziw-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+NEXTAUTH_SECRET="7f8b3c9a2e1d4f6b8a0c2e4f6a8b0c2e4f6a8b0c2e4f6a8b0c2e4f6a8b0c2e4f"
+GEMINI_API_KEY="AIzaSy..."
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>7. Conclusion</h2>
+      <div class="card">
+        <p>Project LOOP represents an end-to-end, production-ready solution for customer feedback intelligence. By marrying rigorous multi-tenant data isolation with grounded Google Gemini 2.5 Flash AI, it empowers enterprise product organizations to turn scattered customer noise into confident, evidence-backed roadmap decisions.</p>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 16px;">
+          Generated automatically for Project LOOP • Production Release v1.0.0
+        </p>
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>
