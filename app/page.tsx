@@ -59,12 +59,6 @@ export default function Home() {
             Get Started
             <ArrowRight className="w-4 h-4" />
           </Link>
-          <Link
-            href="/login"
-            className="neu-card px-6 py-3 rounded-xl font-medium text-slate-300 hover:text-white transition-colors"
-          >
-            Demo Sign In
-          </Link>
         </div>
 
         {/* System Pillars Grounded Cards */}
@@ -100,18 +94,6 @@ export default function Home() {
           </div>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="pt-8 border-t border-surface-border/50 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-        <div>Project LOOP — Multi-Tenant AI Customer Feedback Intelligence</div>
-        <div className="flex flex-wrap items-center gap-4">
-          <span>Next.js 14 App Router</span>
-          <span>•</span>
-          <span>Prisma + PostgreSQL</span>
-          <span>•</span>
-          <span>Google Gemini AI</span>
-        </div>
-      </footer>
     </div>
   );
 }

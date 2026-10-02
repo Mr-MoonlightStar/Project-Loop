@@ -21,7 +21,6 @@ function LoginForm() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -54,11 +53,6 @@ function LoginForm() {
       setAuthError("An unexpected error occurred. Please try again.");
       setIsLoading(false);
     }
-  };
-
-  const handleDemoFill = (demoEmail: string) => {
-    setValue("email", demoEmail, { shouldValidate: true });
-    setValue("password", "loopdemo123", { shouldValidate: true });
   };
 
   return (
@@ -209,36 +203,6 @@ function LoginForm() {
               )}
             </button>
           </form>
-
-          {/* Quick-Fill Demo Accounts */}
-          <div className="pt-2 border-t border-surface-border">
-            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">
-              1-Click Demo Accounts (Local / Preview)
-            </span>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => handleDemoFill("admin@loopdemo.com")}
-                className="min-h-[44px] px-2 py-1.5 rounded bg-surface hover:bg-surface-elevated border border-surface-border text-[11px] font-medium text-slate-300 hover:text-white transition-colors text-center"
-              >
-                👑 Admin
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoFill("analyst@loopdemo.com")}
-                className="min-h-[44px] px-2 py-1.5 rounded bg-surface hover:bg-surface-elevated border border-surface-border text-[11px] font-medium text-slate-300 hover:text-white transition-colors text-center"
-              >
-                📊 Analyst
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoFill("viewer@loopdemo.com")}
-                className="min-h-[44px] px-2 py-1.5 rounded bg-surface hover:bg-surface-elevated border border-surface-border text-[11px] font-medium text-slate-300 hover:text-white transition-colors text-center"
-              >
-                👁️ Viewer
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Footer Link */}

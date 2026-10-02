@@ -8,7 +8,7 @@ const addMemberSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   role: z.enum(["ADMIN", "ANALYST", "VIEWER"]).default("VIEWER"),
-  password: z.string().min(6, "Password must be at least 6 characters").optional().default("loopdemo123"),
+  password: z.string().min(6, "Password must be at least 6 characters").optional().default("Welcome@Loop2026!"),
 });
 
 export async function GET() {

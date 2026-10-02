@@ -7,14 +7,14 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38bdf8?logo=tailwind-css)](https://tailwindcss.com/)
 [![Prisma ORM](https://img.shields.io/badge/Prisma-5.22-2d3748?logo=prisma)](https://www.prisma.io/)
-[![Google Gemini](https://img.shields.io/badge/Google_Gemini-2.5_Flash-4285f4?logo=google)](https://ai.google.dev/)
+[![Google Gemini](https://img.shields.io/badge/Google_Gemini-1.5_Flash-4285f4?logo=google)](https://ai.google.dev/)
 [![Neon Database](https://img.shields.io/badge/PostgreSQL-Neon_Serverless-00e599?logo=postgresql)](https://neon.tech/)
 
 ---
 
 ## 🎯 Platform Overview
 
-Project LOOP ingests multi-channel customer feedback (Support Tickets, App Store Reviews, NPS/CSAT Surveys, Sales Calls, Community Threads) and transforms it into structured, evidence-backed product decisions. It combines **deterministic quantitative analytics** with **grounded LLM intelligence** (`gemini-2.5-flash` and `text-embedding-004`) ensuring zero hallucination and strict citation of verbatim customer statements.
+Project LOOP ingests multi-channel customer feedback (Support Tickets, App Store Reviews, NPS/CSAT Surveys, Sales Calls, Community Threads) and transforms it into structured, evidence-backed product decisions. It combines **deterministic quantitative analytics** with **grounded LLM intelligence** (`gemini-1.5-flash` and `text-embedding-004`) ensuring zero hallucination and strict citation of verbatim customer statements.
 
 ---
 
@@ -35,7 +35,7 @@ Server-side authorization guards enforce 3 distinct user tiers:
 | 👁️ **VIEWER** | Read-only executive view: browse analytics dashboards, query Ask LOOP grounded assistant, inspect inbox and themes, review published reports. |
 
 ### 3. Zero-Hallucination Grounded AI Pipeline
-- **Auto-Classification**: Gemini 2.5 Flash classifies sentiment (`POS`, `NEU`, `NEG`), calculates normalized sentiment score (`-1.0` to `+1.0`), extracts feature area, and assigns relevant themes with strict Zod schema validation.
+- **Auto-Classification**: Gemini 1.5 Flash classifies sentiment (`POS`, `NEU`, `NEG`), calculates normalized sentiment score (`-1.0` to `+1.0`), extracts feature area, and assigns relevant themes with strict Zod schema validation.
 - **Theme Clustering & Spike Detection**: Trend velocity algorithms detect emerging customer friction ($\ge 50\%$ period-over-period growth with $\ge 3$ items) and alert product teams.
 - **Ask LOOP Grounded Assistant**: Uses Gemini embeddings (`text-embedding-004`) and hybrid cosine similarity search strictly constrained within the tenant's workspace. The LLM prompt explicitly refuses to answer if evidence is absent and cites verbatim quote IDs `[1]`, `[2]`.
 - **Voice of Customer (VoC) Reports**: Pre-computes exact distributions and top quotes in TypeScript before prompting Gemini to write executive-level syntheses, risk matrices, and prioritized action plans (P0/P1/P2).
@@ -50,7 +50,7 @@ Server-side authorization guards enforce 3 distinct user tiers:
 ## 📱 Complete Screen & Module Inventory
 
 1. **Landing Page** (`/`): Product narrative, feature highlights, and authentication gateways.
-2. **Authentication** (`/login`, `/signup`): Secure credentials sign-in with 1-click demo credential quick-fill buttons and new tenant workspace creation.
+2. **Authentication** (`/login`, `/signup`): Secure credentials sign-in, OAuth providers, and new tenant workspace creation.
 3. **Analytics Dashboard** (`/dashboard`): Real-time volume trends, sentiment breakdown donut chart, top themes horizontal bar chart, channel distribution, and date filters (`7d`, `30d`, `90d`, `all`).
 4. **Feedback Inbox** (`/inbox`): High-density feedback table with multi-faceted filtering (status, sentiment, channel, theme), search query, pagination, and empty-state indicators.
 5. **Feedback Detail View** (`/inbox/[id]`): Verbatim customer transcript, metadata tags, triage workflow controls (`NEW`, `REVIEWED`, `ACTIONED`), and manual AI re-classification trigger.
@@ -64,18 +64,6 @@ Server-side authorization guards enforce 3 distinct user tiers:
 10. **Workspace Settings & RBAC** (`/settings`): Tenant profile details, member directory, role promotion/demotion dropdowns, and new member invitation modal.
 11. **User Profile** (`/profile`): Personal profile details, tenant association badge, and password change security form.
 12. **Error & Fallback States**: Branded 404 (`app/not-found.tsx`), 500 error boundary (`app/error.tsx`), and RBAC 403 access control modal.
-
----
-
-## 👥 Demo Credentials
-
-The database seed provides ready-to-test accounts for all 3 RBAC tiers (Password: `loopdemo123` or quick-fill buttons on the login screen):
-
-| Role | Email | Password | Primary Use Case |
-|---|---|---|---|
-| **Admin** | `admin@loopdemo.com` | `loopdemo123` | Full workspace governance, settings, user management, and deletion |
-| **Analyst** | `analyst@loopdemo.com` | `loopdemo123` | Feedback ingestion, CSV import, status triage, and VoC generation |
-| **Viewer** | `viewer@loopdemo.com` | `loopdemo123` | Read-only dashboards, Ask LOOP queries, and reports inspection |
 
 ---
 
@@ -119,7 +107,7 @@ npm run seed
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) and sign in using one of the demo accounts!
+Open [http://localhost:3000](http://localhost:3000) and sign in or create a new workspace!
 
 ---
 

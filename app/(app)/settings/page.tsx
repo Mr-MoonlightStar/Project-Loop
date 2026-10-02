@@ -474,7 +474,7 @@ export default function SettingsPage() {
               </div>
 
               <p className="text-[11px] text-text-muted">
-                Initial temporary password will be set to <code className="text-brand">loopdemo123</code>.
+                Initial temporary password will be set to <code className="text-brand">Welcome@Loop2026!</code>.
               </p>
 
               <div className="pt-2 flex items-center justify-end gap-3">
