@@ -111,10 +111,49 @@ export default async function AppLayout({
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6">
+      {/* Main Content Area with bottom padding on mobile for nav bar */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 pb-20 md:pb-6">
         {children}
       </main>
+
+      {/* Mobile Bottom Navigation Bar (visible only on mobile screens < 768px) */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur border-t border-surface-border flex items-center justify-around py-2 px-2 text-xs">
+        <Link
+          href="/dashboard"
+          className="flex flex-col items-center gap-1 p-1.5 text-slate-400 hover:text-brand focus:text-brand transition-colors"
+        >
+          <LayoutDashboard className="w-5 h-5" />
+          <span className="text-[10px]">Dashboard</span>
+        </Link>
+        <Link
+          href="/inbox"
+          className="flex flex-col items-center gap-1 p-1.5 text-slate-400 hover:text-brand focus:text-brand transition-colors"
+        >
+          <Inbox className="w-5 h-5" />
+          <span className="text-[10px]">Inbox</span>
+        </Link>
+        <Link
+          href="/trends"
+          className="flex flex-col items-center gap-1 p-1.5 text-slate-400 hover:text-brand focus:text-brand transition-colors"
+        >
+          <TrendingUp className="w-5 h-5" />
+          <span className="text-[10px]">Trends</span>
+        </Link>
+        <Link
+          href="/ask"
+          className="flex flex-col items-center gap-1 p-1.5 text-slate-400 hover:text-amber-400 focus:text-amber-400 transition-colors"
+        >
+          <Sparkles className="w-5 h-5" />
+          <span className="text-[10px]">Ask LOOP</span>
+        </Link>
+        <Link
+          href="/reports"
+          className="flex flex-col items-center gap-1 p-1.5 text-slate-400 hover:text-brand focus:text-brand transition-colors"
+        >
+          <FileText className="w-5 h-5" />
+          <span className="text-[10px]">Reports</span>
+        </Link>
+      </nav>
     </div>
   );
 }

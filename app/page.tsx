@@ -5,29 +5,29 @@ export default function Home() {
   return (
     <div className="relative min-h-screen flex flex-col justify-between p-6 sm:p-12 max-w-7xl mx-auto">
       {/* Top Floating Glass Navigation Header */}
-      <header className="glass-panel sticky top-6 z-50 rounded-2xl px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center text-white font-bold tracking-wider shadow-sm">
+      <header className="glass-panel sticky top-3 sm:top-6 z-50 rounded-2xl px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center text-white font-bold tracking-wider shadow-sm shrink-0">
             ∞
           </div>
-          <span className="font-semibold text-lg tracking-tight">Project LOOP</span>
-          <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-brand-muted text-brand-400 border border-brand-500/20">
+          <span className="font-semibold text-base sm:text-lg tracking-tight">Project LOOP</span>
+          <span className="hidden sm:inline-block text-xs font-mono px-2 py-0.5 rounded-full bg-brand-muted text-brand-400 border border-brand-500/20">
             Cycle 1
           </span>
         </div>
 
-        <nav className="flex items-center gap-3">
+        <nav className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/login"
-            className="text-sm font-medium px-4 py-2 rounded-lg hover:bg-surface-subtle transition-colors"
+            className="text-xs sm:text-sm font-medium px-3 sm:px-4 py-2 min-h-[44px] flex items-center rounded-lg hover:bg-surface-subtle transition-colors"
           >
             Sign In
           </Link>
           <Link
             href="/signup"
-            className="neu-button text-sm font-medium px-4 py-2 rounded-lg bg-brand text-white hover:bg-brand-hover flex items-center gap-1.5 transition-all"
+            className="neu-button text-xs sm:text-sm font-medium px-3 sm:px-4 py-2 min-h-[44px] rounded-lg bg-brand text-white hover:bg-brand-hover flex items-center gap-1.5 transition-all shadow-sm"
           >
-            Create Workspace
+            <span className="hidden xs:inline">Create</span> Workspace
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </nav>
@@ -103,13 +103,13 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="pt-8 border-t border-surface-border/50 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-        <div>Project LOOP — Corporate-Grade Web Development Delivery</div>
-        <div className="flex items-center gap-4">
+        <div>Project LOOP — Multi-Tenant AI Customer Feedback Intelligence</div>
+        <div className="flex flex-wrap items-center gap-4">
           <span>Next.js 14 App Router</span>
           <span>•</span>
           <span>Prisma + PostgreSQL</span>
           <span>•</span>
-          <span>Claude Sonnet AI</span>
+          <span>Google Gemini AI</span>
         </div>
       </footer>
     </div>

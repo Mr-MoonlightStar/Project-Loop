@@ -3,11 +3,12 @@ import { prisma } from "@/lib/db";
 import { requireAnyRole } from "@/lib/rbac";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import { passwordSchema } from "@/lib/validations/auth";
 
 const updateProfileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").optional(),
   currentPassword: z.string().optional(),
-  newPassword: z.string().min(6, "New password must be at least 6 characters").optional(),
+  newPassword: passwordSchema.optional(),
 });
 
 export async function GET() {

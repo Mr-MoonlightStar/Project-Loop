@@ -1,14 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { z } from "zod";
 import { prisma } from "@/lib/db";
-
-const signupSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  workspaceName: z.string().min(2, "Workspace name must be at least 2 characters"),
-});
+import { signupSchema } from "@/lib/validations/auth";
 
 export async function POST(req: Request) {
   try {
