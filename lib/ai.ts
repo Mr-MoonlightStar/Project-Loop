@@ -40,7 +40,7 @@ export async function classifyFeedback(
 
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
-    model: "gemini-3.8-flash",
+    model: "gemini-3.1-flash-lite",
     generationConfig: {
       responseMimeType: "application/json",
       temperature: 0.1, // Low temperature for deterministic classification
@@ -180,7 +180,7 @@ export async function answerGroundedQuestion(
 
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
-    model: "gemini-3.8-flash",
+    model: "gemini-3.1-flash-lite",
     generationConfig: {
       responseMimeType: "application/json",
       temperature: 0.1, // Strict grounding, zero hallucination
@@ -339,7 +339,7 @@ export async function generateVoCReport(data: PrecomputedReportData): Promise<Vo
 
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
-    model: "gemini-3.8-flash",
+    model: "gemini-3.1-flash-lite",
     generationConfig: {
       responseMimeType: "application/json",
       temperature: 0.2,
