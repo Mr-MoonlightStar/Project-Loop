@@ -67,50 +67,6 @@ Server-side authorization guards enforce 3 distinct user tiers:
 
 ---
 
-## 🚀 Local Development Setup
-
-### 1. Prerequisites
-- **Node.js**: v18.17.0 or higher
-- **PostgreSQL**: Neon, Supabase, or local PostgreSQL instance
-- **Google Gemini API Key**: [Get a Gemini API Key](https://aistudio.google.com/)
-
-### 2. Installation
-Clone the repository and install dependencies:
-```bash
-git clone https://github.com/Mr-MoonlightStar/Project-Loop.git
-cd Project-Loop
-npm install
-```
-
-### 3. Environment Variables
-Create a `.env` file in the root directory:
-```env
-# Database Connection (Neon / PostgreSQL)
-DATABASE_URL="postgresql://username:password@ep-host.region.neon.tech/neondb?sslmode=require"
-
-# NextAuth Configuration
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="super-secret-random-hex-string-for-nextauth-encryption"
-
-# Google Gemini API Key
-GEMINI_API_KEY="AIzaSyYourGeminiApiKeyHere"
-```
-
-### 4. Database Migration & Seed
-Run Prisma migrations and populate the database with realistic multi-channel feedback data (140+ items across 6 themes):
-```bash
-npx prisma migrate dev --name init
-npm run seed
-```
-
-### 5. Start Development Server
-```bash
-npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) and sign in or create a new workspace!
-
----
-
 ## 🚢 Production Deployment (Vercel)
 
 This repository is optimized for zero-configuration continuous deployment on Vercel:
@@ -159,6 +115,3 @@ npx next build
 - [x] **Step 12**: Complete documentation, architecture specification & deployment readiness
 
 ---
-
-## ⚖️ License
-Proprietary — Developed for corporate customer-feedback intelligence operations.
